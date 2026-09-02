@@ -5,6 +5,7 @@
   --border: #e5e4e7;
   --accent: #aa3bff;
   --accent-border: rgba(170, 59, 255, 0.5);
+  --error: #b91c1c;
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
 
   font: 18px/145% var(--sans);
@@ -21,6 +22,7 @@
     --border: #2e303a;
     --accent: #c084fc;
     --accent-border: rgba(192, 132, 252, 0.5);
+    --error: #f87171;
   }
 }
 
@@ -36,36 +38,94 @@
   flex-direction: column;
 }
 
-form {
+.url-form {
   width: 100%;
   max-width: 600px;
-  display: flex;
-  gap: 10px;
 }
 
-form > input {
+.url-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.url-form-field label {
+  color: var(--text-h);
+  font-size: 14px;
+}
+
+.url-form-row {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.url-form-row input {
   flex: 1;
+  min-width: 0;
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 5px;
   font-size: 16px;
-  color: var(--text);
+  color: var(--text-h);
   background: var(--bg);
-  outline: none;
 }
 
-form > button {
-  padding: 10px;
+.url-form-row input[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.url-form-row input:disabled {
+  opacity: 0.7;
+}
+
+.url-form-row button {
+  flex-shrink: 0;
+  padding: 10px 14px;
   border: none;
   border-radius: 5px;
   font-size: 16px;
   color: var(--bg);
   background: var(--accent);
   cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease;
 }
 
-form > button:hover {
+.url-form-row button:hover:not(:disabled) {
   background: var(--accent-border);
+}
+
+.url-form-row button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.url-form-row input:focus-visible,
+.url-form-row button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.field-hint {
+  font-size: 14px;
+}
+
+.error-message {
+  color: var(--error);
+  font-size: 14px;
+}
+
+.url-result {
+  width: 100%;
+  max-width: 600px;
+}
+
+.short-url {
+  margin-top: 16px;
+  overflow-wrap: anywhere;
 }
 
 a {
@@ -88,6 +148,7 @@ header {
   font-size: 24px;
   font-weight: 600;
   color: var(--text-h);
+  text-wrap: balance;
 }
 
 .main {
@@ -97,10 +158,6 @@ header {
   align-items: center;
   justify-content: center;
   padding: 10px 10px 12vh;
-}
-
-.error-message {
-  color: red;
 }
 
 footer {
@@ -115,12 +172,22 @@ footer {
 }
 
 @media (max-width: 768px) {
-  form {
+  .url-form-row {
     flex-direction: column;
+  }
+
+  .url-form-row button {
+    width: 100%;
   }
 
   footer {
     flex-direction: column;
     gap: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .url-form-row button {
+    transition: none;
   }
 }
