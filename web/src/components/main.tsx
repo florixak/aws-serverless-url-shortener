@@ -16,8 +16,10 @@ const Main = () => {
         setShortUrl={setShortUrl}
         setError={setError}
         setLoading={setLoading}
+        loading={loading}
+        error={error}
       />
-      <UrlResult error={error} loading={loading} shortUrl={shortUrl} />
+      <UrlResult shortUrl={shortUrl} />
     </main>
   );
 };

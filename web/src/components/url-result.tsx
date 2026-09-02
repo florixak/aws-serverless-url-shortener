@@ -1,19 +1,18 @@
 type UrlResultProps = {
-  error: string;
-  loading: boolean;
   shortUrl: string;
 };
 
-const UrlResult = ({ error, loading, shortUrl }: UrlResultProps) => {
+const UrlResult = ({ shortUrl }: UrlResultProps) => {
   return (
     <section className="url-result">
-      {error && <p className="error-message">{error}</p>}
-      {loading && <p>Generating short URL...</p>}
-      {shortUrl && (
+      {shortUrl ? (
         <p className="short-url">
-          Short URL: <a href={shortUrl}>{shortUrl}</a>
+          Short link:{" "}
+          <a href={shortUrl} rel="noreferrer">
+            {shortUrl}
+          </a>
         </p>
-      )}
+      ) : null}
     </section>
   );
 };
