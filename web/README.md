@@ -1,75 +1,93 @@
-# React + TypeScript + Vite
+# SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + TypeScript + Vite app for creating Short links. v1 is a single page at `/`: the create form and the result share that screen. There is no client-side router. A Short link click is a Redirect from the API, not an SPA route.
 
-Currently, two official plugins are available:
+<p align="center"><img src="../docs/images/home.png" alt="Create form" width="720"></p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Page
 
-## React Compiler
+`App` renders `Header`, `Main`, and `Footer`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Header title: `URL Shortener`
+- `Main` holds form state (`url`, `shortUrl`, `error`, `loading`) and composes `UrlForm` plus `UrlResult`
+- Footer with copyright and link
 
-## Expanding the ESLint configuration
+`UrlForm` posts only after `parseTargetUrl` succeeds. On success, `UrlResult` shows `Short link:` plus an `<a href={shortUrl}>`. On failure, an alert under the field keeps focus on the input.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The form:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- label `Link to shorten`
+- `type="url"`, `maxLength={2048}`, placeholder `https://example.com…`
+- hint `Must start with https://`
+- submit label `Create short link` (or `Creating…` while the request is in flight)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Colors follow `prefers-color-scheme`. Below 768px the field and button stack. Button hover animation is off when `prefers-reduced-motion: reduce`.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Target URL rules
 
+Client checks are in `src/lib/parse-target-url.ts`. The visitor-facing messages are:
+
+| Condition | Message |
+| --- | --- |
+| Empty after trim | `Enter a link to shorten.` |
+| Longer than 2048 characters | `That link is too long. Use 2048 characters or fewer.` |
+| Control characters, or not `https:` | `That link is not valid. Paste a full https:// URL.` / `Only https:// links are allowed. Switch http to https if the site supports it.` |
+| `new URL()` throws, or no hostname | `Enter a full URL, like https://example.com` |
+| Username or password in the URL | `Remove the username and password from the URL.` |
+| Create request fails after a valid parse | `Couldn’t create a short link. Try again.` |
+
+The Lambdas apply the same rules. They return JSON errors instead of these strings.
+
+## API from the browser
+
+`src/lib/short-url.ts` calls:
+
+```http
+POST ${VITE_API_URL}/links
+Content-Type: application/json
+
+{ "url": "<validated Target URL href>" }
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+A 2xx body must include `shortUrl`. Anything else throws and the form shows the generic create error above.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Copy `web/.env.example` to `web/.env`:
 
 ```
+VITE_API_URL=your_api_gateway_url
+```
+
+Use the API Gateway base URL with no trailing slash. The client appends `/links`.
+
+## Run
+
+From `web/`:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Other scripts:
+
+```bash
+pnpm lint
+pnpm build
+pnpm preview
+```
+
+`pnpm build` runs `tsc -b` then `vite build`. Vite config is the default `@vitejs/plugin-react` setup.
+
+## Source
+
+| Path | Role |
+| --- | --- |
+| `src/App.tsx` | Header, main, footer |
+| `src/components/url-form.tsx` | Create form |
+| `src/components/url-result.tsx` | Short link output |
+| `src/components/header.tsx` / `footer.tsx` | Site header and footer |
+| `src/lib/parse-target-url.ts` | Client Target URL checks |
+| `src/lib/short-url.ts` | `POST /links` |
+| `src/index.css` | Layout and color tokens |
+
+The SPA does not import Lambda modules. Handlers live in `infrastructure/` at the repo root.
