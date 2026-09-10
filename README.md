@@ -44,9 +44,9 @@ flowchart LR
 | Lambda `redirectLink` | Look up the Short code, increment `clickCount`, return 302 |
 | DynamoDB `links-table` | Partition key `shortCode` (String) |
 
-Both functions use the Node.js 22.x runtime. The handlers set the AWS SDK region to `eu-central-1`.
+Both functions use the Node.js 22.x runtime. The AWS SDK region comes from the Lambda environment.
 
-Each function has its own IAM role. Create may `dynamodb:PutItem`. Redirect may `dynamodb:GetItem` and `dynamodb:UpdateItem`. Policy files are next to the handlers in `infrastructure/iam/`.
+Each function has its own IAM role, granted in the CDK stack. Create may `dynamodb:PutItem`. Redirect may `dynamodb:GetItem` and `dynamodb:UpdateItem`.
 
 ## HTTP API
 
@@ -106,7 +106,7 @@ The SPA and the Lambdas share the same checks. A Target URL must:
 | Path | Contents |
 | --- | --- |
 | `web/` | React + Vite SPA. See [`web/README.md`](web/README.md). |
-| `infrastructure/` | Lambda handlers and IAM policies. See [`infrastructure/README.md`](infrastructure/README.md). |
+| `cdk/` | CDK stack, Lambda handlers, and IAM grants. See [`cdk/README.md`](cdk/README.md). |
 | `docs/adr/` | Architecture decisions. |
 | `docs/images/` | Screenshots and diagrams for this README. |
 | `CONTEXT.md` | Domain terms: Visitor, Target URL, Short link, Short code, Redirect. |
