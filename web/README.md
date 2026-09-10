@@ -90,4 +90,4 @@ pnpm preview
 | `src/lib/short-url.ts` | `POST /links` |
 | `src/index.css` | Layout and color tokens |
 
-The SPA does not import Lambda modules. Handlers live in `infrastructure/` at the repo root.
+The SPA does not import Lambda modules. Handlers live in `cdk/handlers/` and are deployed by the CDK stack. See [`cdk/README.md`](../cdk/README.md).

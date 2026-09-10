@@ -5,9 +5,9 @@ Serverless URL shortener on AWS. A visitor pastes a Target URL, receives a Short
 ## Layout
 
 - `web/` — React + Vite SPA
-- `api/` — AWS Lambda handlers and the IAM policies those handlers run under
+- `cdk/` — AWS CDK stack, Lambda handlers, and the IAM grants those handlers run under
 
-Frontend lives in `web/`. Lambda source and least-privilege policies live in `api/`. Keep that boundary: UI does not import Lambda modules; handlers do not serve the SPA.
+Frontend lives in `web/`. Lambda source and the stack live in `cdk/`. Keep that boundary: UI does not import Lambda modules; handlers do not serve the SPA.
 
 ## Auth
 
@@ -25,9 +25,9 @@ v1 is a single page at `/` (create form and result together). Do not add a clien
 - React performance (waterfalls, bundles, re-renders): `web/.agents/skills/vercel-react-best-practices/`
 - UI review (accessibility, UX): `web/.agents/skills/web-design-guidelines/`
 
-## `api/`
+## `cdk/`
 
-One concern per Lambda. Validate input, persist or look up the mapping, return the HTTP response. Colocate the execution-role policy with the function it authorizes; grant only the actions and resources that function uses. Treat policies as production code and review them with the handler.
+One concern per Lambda. Validate input, persist or look up the mapping, return the HTTP response. Handlers live in `cdk/handlers/`. Grant only the actions and resources each function uses, next to that function in the stack. Treat IAM grants as production code and review them with the handler.
 
 ## Domain language
 

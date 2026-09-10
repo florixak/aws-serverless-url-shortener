@@ -3,7 +3,7 @@ import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { randomBytes } from "crypto";
 import { parseTargetUrl } from "./parse-target-url.mjs";
 
-const ddbClient = new DynamoDBClient({ region: "eu-central-1" });
+const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
 
 const generateCode = () => randomBytes(4).toString("base64url").slice(0, 7);
