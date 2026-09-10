@@ -32,7 +32,7 @@ IAM roles are managed by CDK automatically. Each Lambda has its own execution ro
 | `createLink` | `dynamodb:PutItem` on `links-table` |
 | `redirectLink` | `dynamodb:GetItem`, `dynamodb:UpdateItem` on `links-table` |
 
-Roles are created via `table.grantWriteData(createFn)` and `table.grantReadWriteData(redirectFn)` in `url-shortener-stack.ts`. No manual IAM JSON required.
+Roles are created via `table.grant(createFn, "dynamodb:PutItem")` and `table.grant(redirectFn, "dynamodb:GetItem", "dynamodb:UpdateItem")` in `url-shortener-stack.ts`. No manual IAM JSON required.
 
 ## Deploy
 

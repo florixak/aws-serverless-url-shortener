@@ -25,7 +25,7 @@ export class UrlShortenerStack extends cdk.Stack {
       },
     });
 
-    table.grantWriteData(createFn);
+    table.grant(createFn, "dynamodb:PutItem");
 
     const redirectFn = new NodejsFunction(this, "RedirectLinkFunction", {
       entry: "./handlers/redirect-lambda.mjs",
@@ -36,7 +36,7 @@ export class UrlShortenerStack extends cdk.Stack {
       },
     });
 
-    table.grantReadWriteData(redirectFn);
+    table.grant(redirectFn, "dynamodb:GetItem", "dynamodb:UpdateItem");
 
     const api = new apigateway.HttpApi(this, "UrlShortenerApi");
 
